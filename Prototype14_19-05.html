@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deine Nachricht – mobile.de</title>
+  <style>
+    /* General body styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f4f4f4;
+      color: #333; /* Default text color */
+    }
+
+    /* Main container for the form */
+    .container {
+      max-width: 480px;
+      margin: 2rem auto; /* Added more margin for better centering */
+      background: white;
+      padding: 1.5rem; /* Increased padding */
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+    }
+
+    /* Headings */
+    h2 {
+      margin-top: 0; /* Removed top margin as container has padding */
+      margin-bottom: 0.75rem;
+      text-align: left;
+      color: #1B1B21; /* Brand color for heading */
+      font-size: 1.75rem;
+    }
+
+    /* Paragraph text styling */
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* Labels and Legends for form elements */
+    label, legend {
+      display: block;
+      margin: 0.75rem 0 0.35rem; /* Adjusted margin */
+      font-weight: bold;
+      color: #555; /* Slightly lighter color for labels */
+    }
+
+    /* Input, select, and textarea common styling */
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem; /* Increased padding */
+      margin-bottom: 0.25rem; /* Reduced margin to make space for error message */
+      border-radius: 6px; /* Slightly more rounded */
+      border: 1px solid #ccc;
+      font-family: inherit;
+      font-size: 1rem;
+      box-sizing: border-box; /* Ensures padding and border don't increase width */
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #e10019;
+      box-shadow: 0 0 0 2px rgba(225, 0, 25, 0.2);
+      outline: none;
+    }
+    
+    input[aria-invalid="true"], select[aria-invalid="true"] {
+        border-color: #e10019; /* Red border for invalid fields */
+        box-shadow: 0 0 0 2px rgba(225, 0, 25, 0.2); /* Subtle glow for invalid fields */
+    }
+
+
+    /* Textarea specific styling */
+    textarea {
+      height: 200px; /* Increased height for potentially longer messages with toned sentences */
+      resize: vertical; /* Allow vertical resizing */
+      margin-bottom: 1rem; /* Standard margin for textarea */
+    }
+
+    /* Form sections and fieldsets */
+    .form-section, fieldset {
+      margin-bottom: 1.5rem; /* Increased margin */
+      border: none;
+      padding: 0;
+    }
+
+    /* Containers for chips */
+    .radio-group-container, .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem; /* Increased gap */
+      margin-bottom: 1rem;
+    }
+
+    /* Chip styling */
+    .chip {
+      padding: 0.6rem 1.2rem; /* Adjusted padding */
+      border-radius: 25px; /* More rounded */
+      background-color: #e9e9e9; /* Lighter background */
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid #dcdcdc; /* Subtle border */
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .chip:hover {
+      background-color: #ddd;
+    }
+
+    .chip:focus {
+      outline: 2px solid #e10019;
+      outline-offset: 2px;
+      border-color: #e10019;
+    }
+
+    .chip.selected {
+      background-color: #350051;
+      color: white;
+      border-color: #350051;
+    }
+
+    /* Button styling */
+    .generate-btn, .submit-btn {
+      width: 100%;
+      background-color: #e10019;
+      color: white;
+      padding: 0.85rem; /* Adjusted padding */
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem; /* Slightly larger font */
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem; /* Added margin */
+      transition: background-color 0.2s ease;
+    }
+
+    .generate-btn:hover, .submit-btn:not(:disabled):hover {
+      background-color: #c00010; /* Darker shade on hover */
+    }
+
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Error message styling */
+    .error-message {
+      display: block; /* Ensure it's on its own line */
+      color: #e10019; /* Brand red color for errors */
+      font-size: 0.875rem;
+      margin-top: 0.25rem; /* Small space above the error message */
+      margin-bottom: 0.75rem; /* Space below error message before next label */
+      min-height: 1.2em; /* Reserve space to prevent layout jumps */
+    }
+    .error-message:empty {
+        /* Effectively hide if empty, but min-height still reserves space.
+           JS will clear textContent to make it empty.
+        */
+    }
+
+
+    /* Vehicle and Dealer contact card styling */
+    section.vehicle-card, section.dealer-contact {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.5rem; /* Increased margin */
+      background-color: #f9f9f9; /* Light background for cards */
+    }
+
+    .vehicle-card img { /* Specific for vehicle image */
+      width: 100px; /* Slightly larger image */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 4px;
+      object-fit: cover;
+    }
+    .dealer-contact img { /* Specific for dealer image */
+      width: 48px;
+      height: 48px;
+      border-radius: 50%; /* Circular image */
+      object-fit: cover;
+    }
+
+    .vehicle-info, .dealer-info { /* Shared class for info text */
+      flex: 1;
+    }
+    .vehicle-info strong, .dealer-info strong {
+        color: #333;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: auto;
+      padding: 25px;
+      border: 1px solid #888;
+      width: 90%; /* Responsive width */
+      max-width: 450px; /* Max width */
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: center;
+      position: relative; /* For positioning the close button */
+    }
+    
+    .modal-content h3 {
+        color: #256141; /* Green color for success heading */
+        margin-top: 0;
+    }
+
+    .modal-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .modal-close-btn {
+      background-color: #e10019;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background-color: #c00010;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <section class="vehicle-card">
+      <img src="https://placehold.co/120x80/d9d9d9/FFF?text=Skoda+Scala" alt="Skoda Scala Fahrzeugbild" onerror="this.onerror=null;this.src='https://placehold.co/120x80/cccccc/000?text=Bild+fehlt';">
+      <div class="vehicle-info">
+        <strong>Skoda Scala</strong><br />
+        Style/LED/4xSitzhzg/RFK360/KLIMA*<br />
+        <strong>19.800 €</strong> <span style="color: green; font-weight: bold;">· Guter Preis</span>
+      </div>
+    </section>
+
+    <h2>Deine Nachricht</h2>
+    <p>Teile Volkswagen Automobile Dresden mit, was dich an diesem Fahrzeug interessiert.</p>
+
+    <div class="form-section">
+      <label for="salutation">Anrede</label>
+      <select id="salutation" name="salutation" aria-describedby="salutationError">
+        <option value="">Bitte wählen</option>
+        <option value="Herr">Herr</option>
+        <option value="Frau">Frau</option>
+        <option value="Divers">Divers</option>
+      </select>
+      <span class="error-message" id="salutationError" aria-live="assertive"></span>
+
+      <label for="firstName">Vorname</label>
+      <input type="text" id="firstName" name="firstName" placeholder="z.B. Alex" aria-describedby="firstNameError" />
+      <span class="error-message" id="firstNameError" aria-live="assertive"></span>
+
+      <label for="lastName">Nachname</label>
+      <input type="text" id="lastName" name="lastName" placeholder="z.B. Mustermann" aria-describedby="lastNameError"/>
+      <span class="error-message" id="lastNameError" aria-live="assertive"></span>
+
+      <label for="email">E-Mail-Adresse</label>
+      <input type="email" id="email" name="email" placeholder="alex.mustermann@example.com" aria-describedby="emailError" />
+      <span class="error-message" id="emailError" aria-live="assertive"></span>
+
+      <label for="phone">Telefonnummer (optional)</label>
+      <input type="tel" id="phone" name="phone" placeholder="z.B. +49 151 23456789"/>
+    </div>
+
+    <fieldset>
+      <legend>Tonfall auswählen:</legend>
+      <div class="radio-group-container" id="toneChips" role="radiogroup" aria-labelledby="tone-legend">
+        <div class="chip" data-value="formal" role="radio" aria-checked="false" tabindex="0">👔 Formal</div>
+        <div class="chip" data-value="casual" role="radio" aria-checked="false" tabindex="0">😊 Locker</div>
+        <div class="chip" data-value="humorous" role="radio" aria-checked="false" tabindex="0">😄 Humorvoll</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Themen auswählen:</legend>
+      <div class="chips-container" id="intentChips" role="group" aria-labelledby="intent-legend">
+        <div class="chip" data-value="mechanical" role="checkbox" aria-checked="false" tabindex="0">Technischer Zustand</div>
+        <div class="chip" data-value="safety" role="checkbox" aria-checked="false" tabindex="0">Sicherheit</div>
+        <div class="chip" data-value="warranty" role="checkbox" aria-checked="false" tabindex="0">Garantie</div>
+        <div class="chip" data-value="fuel" role="checkbox" aria-checked="false" tabindex="0">Kraftstoffverbrauch</div>
+        <div class="chip" data-value="accidents" role="checkbox" aria-checked="false" tabindex="0">Unfälle</div>
+        <div class="chip" data-value="history" role="checkbox" aria-checked="false" tabindex="0">Fahrzeughistorie</div>
+      </div>
+    </fieldset>
+
+    <button type="button" class="generate-btn" id="generateMessageBtn">Nachricht erzeugen</button>
+
+    <label for="message">Deine Nachricht</label>
+    <textarea id="message" name="message" readonly placeholder="Deine generierte Nachricht erscheint hier...">Sehr geehrte Damen und Herren, ich interessiere mich für Ihr Angebot. Bitte kontaktieren Sie mich. Mit freundlichen Grüßen</textarea>
+
+    <section class="dealer-contact">
+      <img src="https://placehold.co/48x48/777/FFF?text=BM" alt="Händler Benjamin Müller Profilbild" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cccccc/000?text=Bild';">
+      <div class="dealer-info">
+        <strong>An:</strong> Benjamin Müller<br />
+        Verkaufsberater Gebrauchtwagen
+      </div>
+    </section>
+
+    <button type="button" class="submit-btn" id="sendButton" disabled>E-Mail senden</button>
+  </div>
+
+  <div id="successModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Nachricht erfolgreich gesendet!</h3>
+      <p>Damit Du dieses Inserat schnell wiederfindest, haben wir es automatisch für Dich auf Deinem Parkplatz gespeichert.</p>
+      <button id="closeModalBtn" class="modal-close-btn">Schließen</button>
+    </div>
+  </div>
+
+  <script>
+    // DOM Element Selections
+    const salutationField = document.getElementById('salutation'); // User's salutation
+    const firstNameField = document.getElementById('firstName');
+    const lastNameField = document.getElementById('lastName');
+    const emailField = document.getElementById('email');
+    const toneChipsContainer = document.getElementById('toneChips');
+    const intentChipsContainer = document.getElementById('intentChips');
+    const allChips = document.querySelectorAll('.chip');
+    const messageTextarea = document.getElementById('message');
+    const sendButton = document.getElementById('sendButton');
+    const generateMessageBtn = document.getElementById('generateMessageBtn');
+
+    // Error message span selections
+    const salutationError = document.getElementById('salutationError');
+    const firstNameError = document.getElementById('firstNameError');
+    const lastNameError = document.getElementById('lastNameError');
+    const emailError = document.getElementById('emailError');
+
+    // Modal elements
+    const successModal = document.getElementById('successModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalOverlay = document.querySelector('.modal-overlay'); // For clicking outside to close
+
+    // Static details
+    const vehicleName = "Skoda Scala"; // Still used for context if no topics are selected
+    const dealerFullName = "Benjamin Müller"; // Dealer's full name, used to extract last name
+
+    // Mapping for intent data-values to full sentences with tone variations
+    const intentSentences = {
+        "mechanical": {
+            formal: "Könnten Sie mir bitte mehr über den technischen Zustand des Fahrzeugs erzählen?",
+            casual: "Wie sieht's denn technisch so aus bei dem Wagen? Alles fit?",
+            humorous: "Ist die Technik eher 'solide wie ein Fels' oder 'hält mit viel gutem Zureden und etwas Glück'?"
+        },
+        "safety": {
+            formal: "Ich interessiere mich für die Sicherheitsaspekte dieses Modells und eventuell vorhandene Testberichte.",
+            casual: "Was gibt's zur Sicherheit zu sagen? Hat der Airbags und so Zeug?",
+            humorous: "In Sachen Sicherheit: Bringt mich der Wagen sicher von A nach B, oder ist B eher die Werkstatt nach dem ersten Abenteuer?"
+        },
+        "warranty": {
+            formal: "Welche Garantieoptionen sind für dieses Fahrzeug verfügbar oder noch aktiv?",
+            casual: "Gibt's da noch Garantie drauf oder ist das eher 'gekauft wie gesehen'?",
+            humorous: "Hat der noch Garantie, oder ist die schon mit dem letzten Ölwechsel davongelaufen?"
+        },
+        "fuel": {
+            formal: "Wie hoch ist der durchschnittliche Kraftstoffverbrauch (innerorts/außerorts/kombiniert)?",
+            casual: "Was schluckt der denn so im Schnitt? Eher ein Schlückchen oder ein Fass?",
+            humorous: "Beim Verbrauch: Ist das eher ein sparsames Kätzchen oder ein durstiger Tiger im Tank?"
+        },
+        "accidents": {
+            formal: "Ist das Fahrzeug unfallfrei oder wurden Vorschäden fachgerecht repariert?",
+            casual: "Hatte der Wagen schon mal 'nen Rempler oder ist er noch unschuldig?",
+            humorous: "Unfälle? Hatte der schon mal ein unerwünschtes Date mit einer Leitplanke oder ist er ein unbeschriebenes Blatt?"
+        },
+        "history": {
+            formal: "Könnten Sie mir Informationen zur Fahrzeughistorie geben, wie z.B. Anzahl der Vorbesitzer und Scheckheftpflege?",
+            casual: "Was gibt's zur Vorgeschichte zu wissen? Viele Vorbesitzer? Scheckheft da?",
+            humorous: "Zur Fahrzeughistorie: Hat der Wagen ein spannendes Vorleben mit vielen Abenteuern oder eher ein ruhiges Dasein im Garagen-Wellnessbereich genossen?"
+        }
+    };
+
+    /**
+     * Displays an error message for a specific field.
+     * @param {HTMLElement} fieldErrorElement - The span element to display the error in.
+     * @param {string} message - The error message.
+     */
+    function displayError(fieldErrorElement, message) {
+        fieldErrorElement.textContent = message;
+    }
+
+    /**
+     * Clears an error message for a specific field.
+     * @param {HTMLElement} fieldErrorElement - The span element to clear.
+     */
+    function clearError(fieldErrorElement) {
+        fieldErrorElement.textContent = '';
+    }
+
+    /**
+     * Validates the mandatory form fields.
+     * @returns {boolean} True if the form is valid, false otherwise.
+     */
+    function validateForm() {
+        let isValid = true;
+        const fieldsToValidate = [
+            { field: salutationField, errorElement: salutationError, message: "Bitte Anrede auswählen." },
+            { field: firstNameField, errorElement: firstNameError, message: "Bitte Vornamen eingeben." },
+            { field: lastNameField, errorElement: lastNameError, message: "Bitte Nachnamen eingeben." },
+            { field: emailField, errorElement: emailError, message: "Bitte E-Mail-Adresse eingeben.", isEmail: true }
+        ];
+
+        fieldsToValidate.forEach(item => {
+            clearError(item.errorElement);
+            item.field.removeAttribute('aria-invalid');
+            const value = item.field.value.trim();
+
+            if (value === "") {
+                displayError(item.errorElement, item.message);
+                item.field.setAttribute('aria-invalid', 'true');
+                isValid = false;
+            } else if (item.isEmail) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(value)) {
+                    displayError(item.errorElement, "Gültige E-Mail-Adresse eingeben.");
+                    item.field.setAttribute('aria-invalid', 'true');
+                    isValid = false;
+                }
+            }
+        });
+        return isValid;
+    }
+
+
+    /**
+     * Generates the message based on user selections and inputs.
+     */
+    function generateMessage() {
+      // Determine the selected tone, defaulting to 'formal'
+      const selectedToneChip = toneChipsContainer.querySelector('.chip.selected');
+      const selectedTone = selectedToneChip ? selectedToneChip.dataset.value : 'formal';
+
+      // Get selected intent chips
+      const selectedIntentChips = Array.from(intentChipsContainer.querySelectorAll('.chip.selected'));
+      
+      // Map selected intent data-values to their corresponding full sentences based on the selected tone
+      const selectedIntentSentences = selectedIntentChips.map(chip => {
+          const intentValue = chip.dataset.value; // e.g., "mechanical"
+          const sentenceVariations = intentSentences[intentValue]; // Get the object with tone variations
+          if (sentenceVariations) {
+              return sentenceVariations[selectedTone] || sentenceVariations.formal; 
+          }
+          return null;
+      }).filter(sentence => sentence);
+
+      // Prepare user's name for the signature
+      const userFirstName = firstNameField.value.trim();
+      const userLastName = lastNameField.value.trim();
+      let userNameForSignature = "";
+      if (userFirstName && userLastName) {
+          userNameForSignature = `${userFirstName} ${userLastName}`;
+      } else if (userFirstName) {
+          userNameForSignature = userFirstName;
+      } else if (userLastName) {
+          userNameForSignature = userLastName;
+      }
+
+      // Prepare opening salutation to the dealer, applying the selected tone
+      const dealerLastName = dealerFullName.split(' ').pop(); // Assumes last word is the last name
+      let openingSalutationToDealer = "";
+      switch (selectedTone) {
+          case "casual":
+              openingSalutationToDealer = `Hallo Herr ${dealerLastName}`;
+              break;
+          case "humorous":
+              openingSalutationToDealer = `Guten Tag Herr ${dealerLastName}, ich hoffe, der Tag ist auf Ihrer Seite!`;
+              break;
+          default: // formal
+              openingSalutationToDealer = `Sehr geehrter Herr ${dealerLastName}`;
+              break;
+      }
+
+      // Start building the message
+      let message = `${openingSalutationToDealer},\n\n`;
+      
+      // Add sentences for selected topics
+      if (selectedIntentSentences.length > 0) {
+        message += "ich interessiere mich für Ihr Fahrzeugangebot (" + vehicleName + ") und habe dazu folgende Fragen bzw. Anmerkungen:\n"; 
+        selectedIntentSentences.forEach(sentence => {
+            message += `- ${sentence}\n`; // List each question as a bullet point
+        });
+      } else {
+        // If no specific topics, add a general inquiry, still mentioning the vehicle.
+        message += `Könnten Sie mir bitte allgemeine weitere Informationen zum Fahrzeug (${vehicleName}) zukommen lassen?`;
+      }
+
+      // Add tone-specific closing part
+      switch (selectedTone) {
+        case "casual":
+          message += "\n\nIch würde mich freuen, bald von Ihnen zu hören und vielleicht eine Probefahrt zu vereinbaren.";
+          break;
+        case "humorous":
+          message += "\n\nIch bin schon sehr gespannt auf Ihre Antwort und hoffe, das Auto hat keine versteckten Talente wie spontane Selbstzerlegung. 😉";
+          break;
+        default: // formal
+          message += "\n\nIch bitte um Kontaktaufnahme, um weitere Details zu besprechen und eventuell einen Besichtigungstermin zu vereinbaren.";
+          break;
+      }
+
+      // Add final closing and signature
+      message += `\n\nMit freundlichen Grüßen\n${userNameForSignature || "Ein/e Interessent/in"}`; // Fallback if no name
+
+      // Update the textarea and enable the send button
+      messageTextarea.value = message;
+      sendButton.disabled = false;
+      messageTextarea.scrollTop = 0; // Scroll to the top of the textarea
+    }
+
+    /**
+     * Handles the selection logic for chips (both radio and checkbox types).
+     */
+    function handleChipSelection(chip) {
+      const parentContainer = chip.closest('.radio-group-container, .chips-container');
+      const role = chip.getAttribute('role');
+
+      if (role === 'radio') { // For single-selection (like tone chips)
+        parentContainer.querySelectorAll('.chip[role="radio"]').forEach(c => {
+          const isCurrentChip = (c === chip);
+          c.classList.toggle('selected', isCurrentChip);
+          c.setAttribute('aria-checked', isCurrentChip);
+        });
+      } else if (role === 'checkbox') { // For multiple-selections (like intent chips)
+        const isSelected = chip.classList.toggle('selected');
+        chip.setAttribute('aria-checked', isSelected);
+      }
+    }
+
+    // --- Event Listeners ---
+
+    // Add event listeners to all chips for click and keyboard interaction
+    allChips.forEach(chip => {
+      chip.addEventListener('click', () => handleChipSelection(chip));
+      chip.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault(); // Prevent default action (e.g., scrolling on Space)
+          handleChipSelection(chip);
+        }
+      });
+    });
+
+    // Add event listener to the "Generate Message" button
+    if (generateMessageBtn) {
+        generateMessageBtn.addEventListener('click', generateMessage);
+    }
+
+    // Event listener for the "E-Mail senden" (Submit) button
+    if (sendButton) {
+        sendButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent any default form submission behavior
+            if (validateForm()) {
+                // Form is valid
+                console.log("Form is valid. Simulating submission...");
+                if (successModal) {
+                    successModal.style.display = 'flex'; // Show the modal
+                }
+                // Optionally, reset the form or parts of it here
+                // For example, to clear input fields:
+                // salutationField.value = '';
+                // firstNameField.value = '';
+                // lastNameField.value = '';
+                // emailField.value = '';
+                // phoneField.value = ''; // If you have a phoneField variable
+                // messageTextarea.value = "Ihre generierte Nachricht erscheint hier...";
+                // sendButton.disabled = true;
+                // Deselect all chips (optional)
+                // document.querySelectorAll('#intentChips .chip.selected').forEach(c => c.classList.remove('selected'));
+                // document.querySelectorAll('#toneChips .chip.selected').forEach(c => c.classList.remove('selected'));
+                // handleChipSelection(defaultToneChip); // Reselect default tone
+            } else {
+                // Form is invalid, errors are displayed by validateForm()
+                console.log("Form validation failed. Please check the errors.");
+                // Focus the first invalid field for better UX
+                const firstInvalidField = document.querySelector('[aria-invalid="true"]');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+            }
+        });
+    }
+    
+    // Event listener for the modal close button
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            if (successModal) {
+                successModal.style.display = 'none'; // Hide the modal
+            }
+        });
+    }
+
+    // Event listener for clicking on the modal overlay (outside the modal content)
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (event) => {
+            // If the clicked target is the overlay itself (not its children)
+            if (event.target === modalOverlay) {
+                successModal.style.display = 'none'; // Hide the modal
+            }
+        });
+    }
+
+
+    // Set a default tone (e.g., formal) on page load for a better initial state
+    const defaultToneChip = toneChipsContainer.querySelector('.chip[data-value="formal"]');
+    if (defaultToneChip) {
+        handleChipSelection(defaultToneChip); // Select it
+    }
+
+  </script>
+</body>
+</html>
