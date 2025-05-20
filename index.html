@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deine Nachricht – mobile.de</title>
+  <title>Deine Nachricht</title>
   <style>
     /* General body styling */
     body {
@@ -29,7 +29,7 @@
       margin-top: 0; /* Removed top margin as container has padding */
       margin-bottom: 0.75rem;
       text-align: left;
-      color: #1B1B21; /* Brand color for heading */
+      color: #000;
       font-size: 1.75rem;
     }
 
@@ -112,21 +112,20 @@
     }
 
     .chip:focus {
-      outline: 2px solid #e10019;
+      outline: 2px solid #350051; /* Focus outline to match selected chip color */
       outline-offset: 2px;
-      border-color: #e10019;
+      border-color: #350051;
     }
 
     .chip.selected {
-      background-color: #350051;
+      background-color: #350051; /* New background color for selected chips */
       color: white;
-      border-color: #350051;
+      border-color: #2a0040; /* Darker border for selected state, matching generate-btn hover */
     }
 
     /* Button styling */
     .generate-btn, .submit-btn {
       width: 100%;
-      background-color: #e10019;
       color: white;
       padding: 0.85rem; /* Adjusted padding */
       border: none;
@@ -138,8 +137,18 @@
       transition: background-color 0.2s ease;
     }
 
-    .generate-btn:hover, .submit-btn:not(:disabled):hover {
-      background-color: #c00010; /* Darker shade on hover */
+    .generate-btn {
+      background-color: #350051; /* New background color for "Nachricht erzeugen" */
+    }
+    .generate-btn:hover {
+      background-color: #2a0040; /* Slightly darker shade of new color on hover */
+    }
+
+    .submit-btn:not(:disabled) {
+      background-color: #c00010; /* Slightly darker red for primary active CTA */
+    }
+    .submit-btn:not(:disabled):hover {
+      background-color: #a00008; /* Even darker shade for hover on primary active CTA */
     }
 
     .submit-btn:disabled {
@@ -224,7 +233,7 @@
     }
     
     .modal-content h3 {
-        color: #256141; /* Green color for success heading */
+        color: #4CAF50; /* Green color for success heading */
         margin-top: 0;
     }
 
@@ -259,7 +268,7 @@
       <div class="vehicle-info">
         <strong>Skoda Scala</strong><br />
         Style/LED/4xSitzhzg/RFK360/KLIMA*<br />
-        <strong>19.800 €</strong> <span style="color: green; font-weight: bold;">· Guter Preis</span>
+        <strong>69.810 €</strong> <span style="color: green; font-weight: bold;">· Guter Preis</span>
       </div>
     </section>
 
@@ -269,7 +278,7 @@
     <div class="form-section">
       <label for="salutation">Anrede</label>
       <select id="salutation" name="salutation" aria-describedby="salutationError">
-        <option value="">Bitte wählen</option>
+        <option value="">Auswählen</option>
         <option value="Herr">Herr</option>
         <option value="Frau">Frau</option>
         <option value="Divers">Divers</option>
@@ -285,7 +294,7 @@
       <span class="error-message" id="lastNameError" aria-live="assertive"></span>
 
       <label for="email">E-Mail-Adresse</label>
-      <input type="email" id="email" name="email" placeholder="alex.mustermann@example.com" aria-describedby="emailError" />
+      <input type="email" id="email" name="email" placeholder="z.B. alex.mustermann@example.com" aria-describedby="emailError" />
       <span class="error-message" id="emailError" aria-live="assertive"></span>
 
       <label for="phone">Telefonnummer (optional)</label>
@@ -313,15 +322,15 @@
       </div>
     </fieldset>
 
-    <button type="button" class="generate-btn" id="generateMessageBtn">Nachricht erzeugen</button>
+    <button type="button" class="generate-btn" id="generateMessageBtn">Nachricht generieren</button>
 
     <label for="message">Deine Nachricht</label>
-    <textarea id="message" name="message" readonly placeholder="Deine generierte Nachricht erscheint hier...">Sehr geehrte Damen und Herren, ich interessiere mich für Ihr Angebot. Bitte kontaktieren Sie mich. Mit freundlichen Grüßen</textarea>
+    <textarea id="message" name="message" readonly placeholder="Ihre generierte Nachricht erscheint hier...">Sehr geehrte Damen und Herren, ich interessiere mich für Ihr Angebot. Bitte kontaktieren Sie mich. Mit freundlichen Grüßen</textarea>
 
     <section class="dealer-contact">
       <img src="https://placehold.co/48x48/777/FFF?text=BM" alt="Händler Benjamin Müller Profilbild" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cccccc/000?text=Bild';">
       <div class="dealer-info">
-        <strong>An:</strong> Benjamin Müller<br />
+        An: Benjamin Müller<br />
         Verkaufsberater Gebrauchtwagen
       </div>
     </section>
@@ -331,9 +340,7 @@
 
   <div id="successModal" class="modal-overlay">
     <div class="modal-content">
-      <h3>Nachricht erfolgreich gesendet!</h3>
-      <p>Damit Du dieses Inserat schnell wiederfindest, haben wir es automatisch für Dich auf Deinem Parkplatz gespeichert.</p>
-      <button id="closeModalBtn" class="modal-close-btn">Schließen</button>
+      <h3 id="modalTitle">Nachricht erfolgreich gesendet!</h3> <p id="modalDescription">Damit Du dieses Inserat schnell wiederfindest, haben wir es automatisch für Dich auf Deinem Parkplatz gespeichert.</p> <button id="closeModalBtn" class="modal-close-btn">Schließen</button>
     </div>
   </div>
 
@@ -343,6 +350,7 @@
     const firstNameField = document.getElementById('firstName');
     const lastNameField = document.getElementById('lastName');
     const emailField = document.getElementById('email');
+    const phoneField = document.getElementById('phone'); // Added for form reset
     const toneChipsContainer = document.getElementById('toneChips');
     const intentChipsContainer = document.getElementById('intentChips');
     const allChips = document.querySelectorAll('.chip');
@@ -423,10 +431,10 @@
     function validateForm() {
         let isValid = true;
         const fieldsToValidate = [
-            { field: salutationField, errorElement: salutationError, message: "Bitte Anrede auswählen." },
-            { field: firstNameField, errorElement: firstNameError, message: "Bitte Vornamen eingeben." },
-            { field: lastNameField, errorElement: lastNameError, message: "Bitte Nachnamen eingeben." },
-            { field: emailField, errorElement: emailError, message: "Bitte E-Mail-Adresse eingeben.", isEmail: true }
+            { field: salutationField, errorElement: salutationError, message: "Bitte wählen Sie Ihre Anrede." },
+            { field: firstNameField, errorElement: firstNameError, message: "Bitte geben Sie Ihren Vornamen ein." },
+            { field: lastNameField, errorElement: lastNameError, message: "Bitte geben Sie Ihren Nachnamen ein." },
+            { field: emailField, errorElement: emailError, message: "Bitte geben Sie Ihre E-Mail-Adresse ein.", isEmail: true }
         ];
 
         fieldsToValidate.forEach(item => {
@@ -441,7 +449,7 @@
             } else if (item.isEmail) {
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailPattern.test(value)) {
-                    displayError(item.errorElement, "Gültige E-Mail-Adresse eingeben.");
+                    displayError(item.errorElement, "Bitte geben Sie eine gültige E-Mail-Adresse ein.");
                     item.field.setAttribute('aria-invalid', 'true');
                     isValid = false;
                 }
@@ -581,20 +589,11 @@
                 console.log("Form is valid. Simulating submission...");
                 if (successModal) {
                     successModal.style.display = 'flex'; // Show the modal
+                    successModal.setAttribute('aria-modal', 'true');
+                    successModal.setAttribute('aria-labelledby', 'modalTitle');
+                    successModal.setAttribute('aria-describedby', 'modalDescription');
+                    closeModalBtn.focus(); // Set focus to the close button in the modal
                 }
-                // Optionally, reset the form or parts of it here
-                // For example, to clear input fields:
-                // salutationField.value = '';
-                // firstNameField.value = '';
-                // lastNameField.value = '';
-                // emailField.value = '';
-                // phoneField.value = ''; // If you have a phoneField variable
-                // messageTextarea.value = "Ihre generierte Nachricht erscheint hier...";
-                // sendButton.disabled = true;
-                // Deselect all chips (optional)
-                // document.querySelectorAll('#intentChips .chip.selected').forEach(c => c.classList.remove('selected'));
-                // document.querySelectorAll('#toneChips .chip.selected').forEach(c => c.classList.remove('selected'));
-                // handleChipSelection(defaultToneChip); // Reselect default tone
             } else {
                 // Form is invalid, errors are displayed by validateForm()
                 console.log("Form validation failed. Please check the errors.");
@@ -607,11 +606,47 @@
         });
     }
     
+    /**
+     * Resets the form to its initial state.
+     */
+    function resetForm() {
+        salutationField.value = '';
+        firstNameField.value = '';
+        lastNameField.value = '';
+        emailField.value = '';
+        phoneField.value = '';
+        messageTextarea.value = "Sehr geehrte Damen und Herren, ich interessiere mich für Ihr Angebot. Bitte kontaktieren Sie mich. Mit freundlichen Grüßen"; // Reset to placeholder or default
+        sendButton.disabled = true;
+
+        // Clear all error messages and aria-invalid attributes
+        [salutationError, firstNameError, lastNameError, emailError].forEach(clearError);
+        [salutationField, firstNameField, lastNameField, emailField].forEach(field => field.removeAttribute('aria-invalid'));
+
+        // Deselect all intent chips
+        intentChipsContainer.querySelectorAll('.chip.selected').forEach(chip => {
+            chip.classList.remove('selected');
+            chip.setAttribute('aria-checked', 'false');
+        });
+
+        // Reselect default tone chip (formal) and deselect others
+        toneChipsContainer.querySelectorAll('.chip').forEach(chip => {
+            const isDefaultFormal = chip.dataset.value === 'formal';
+            chip.classList.toggle('selected', isDefaultFormal);
+            chip.setAttribute('aria-checked', isDefaultFormal);
+        });
+    }
+
+
     // Event listener for the modal close button
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', () => {
             if (successModal) {
                 successModal.style.display = 'none'; // Hide the modal
+                successModal.removeAttribute('aria-modal');
+                successModal.removeAttribute('aria-labelledby');
+                successModal.removeAttribute('aria-describedby');
+                resetForm(); // Reset the form after closing the modal
+                sendButton.focus(); // Return focus to the send button (or another logical element)
             }
         });
     }
@@ -622,9 +657,26 @@
             // If the clicked target is the overlay itself (not its children)
             if (event.target === modalOverlay) {
                 successModal.style.display = 'none'; // Hide the modal
+                successModal.removeAttribute('aria-modal');
+                successModal.removeAttribute('aria-labelledby');
+                successModal.removeAttribute('aria-describedby');
+                resetForm(); // Reset the form after closing the modal
+                sendButton.focus(); // Return focus to the send button
             }
         });
     }
+    
+    // Keyboard navigation for modal (Escape key to close)
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && successModal.style.display === 'flex') {
+            successModal.style.display = 'none';
+            successModal.removeAttribute('aria-modal');
+            successModal.removeAttribute('aria-labelledby');
+            successModal.removeAttribute('aria-describedby');
+            resetForm();
+            sendButton.focus();
+        }
+    });
 
 
     // Set a default tone (e.g., formal) on page load for a better initial state
